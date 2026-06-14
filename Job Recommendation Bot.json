@@ -1,0 +1,110 @@
+{
+  "name": "Job Recommendation Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "452bc505-1597-4f13-88f6-28df6aa8b661",
+      "name": "When chat message received",
+      "webhookId": "b488686b-b7e3-41a4-a5da-863757e5f41f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "your_openrouter_api_key"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are BOT, a human-like AI assistant helping users with jobs, AI learning, resumes, coding, internships, and motivation. Answer naturally with detailed explanations and examples.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"={{$json.chatInput}}\"\n    }\n  ],\n  \"temperature\": 0.8,\n  \"max_tokens\": 1000\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "50bd201d-c202-4dcc-b816-b07a19eed2b3",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0aec69ee-5b8d-43aa-a4c8-2b0dfa0fc721",
+              "name": "text",
+              "value": "={{ $json.choices[0].message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0b05dcb1-3a71-4a97-be0c-77bc5e8b1210",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "46f4b0b2-57da-478a-83a7-ce7ca93048ac",
+  "meta": {
+    "instanceId": "fe3afc0553c0572c2d10591fb00aa31fdb6732709dfb9524f7755d4165320d9c"
+  },
+  "nodeGroups": [],
+  "id": "sZD3Mi7tlgZMFGTd",
+  "tags": []
+}
